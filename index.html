@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health & Habit Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Кастомные стили */
+        .tab-active {
+            border-bottom: 3px solid #10B981;
+            color: #10B981;
+        }
+        
+        .checkbox-custom {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #10B981;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .checkbox-custom:checked {
+            background-color: #10B981;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+            background-size: 16px;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .calendar-day {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-day:hover {
+            transform: scale(1.1);
+        }
+        
+        .calendar-day.active {
+            background-color: #10B981;
+            color: white;
+        }
+        
+        /* Цвета для сахара */
+        .sugar-green { background-color: #D1FAE5; color: #065F46; }
+        .sugar-yellow { background-color: #FEFCBF; color: #854D0E; }
+        .sugar-red { background-color: #FEE2E2; color: #991B1B; }
+        
+        .sugar-value-green { color: #047857; font-weight: 600; }
+        .sugar-value-yellow { color: #A16207; font-weight: 600; }
+        .sugar-value-red { color: #B91C1C; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Основной контейнер -->
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg">
+        
+        <!-- Заголовок -->
+        <header class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4">
+            <h1 class="text-xl font-bold text-center">🌿 Health & Habit Tracker</h1>
+            <p class="text-xs text-center mt-1 opacity-90">Контроль преддиабета</p>
+        </header>
+
+        <!-- Навигация (вкладки) -->
+        <nav class="flex border-b">
+            <button data-tab="plan" class="tab-btn flex-1 py-3 text-sm font-medium text-gray-600 hover:bg-green-50 transition flex items-center justify-center gap-2 tab-active">
+                📋 План
+            </button>
+            <button data-tab="calendar" class="tab-btn flex-1 py-3 text-sm font-medium text-gray-600 hover:bg-green-50 transition flex items-center justify-center gap-2">
+                📅 Календарь
+            </button>
+            <button data-tab="monitoring" class="tab-btn flex-1 py-3 text-sm font-medium text-gray-600 hover:bg-green-50 transition flex items-center justify-center gap-2">
+                📊 Сахар
+            </button>
+        </nav>
+
+        <!-- Контент вкладок -->
+        
+        <!-- Вкладка 1: План на день -->
+        <section id="tab-plan" class="tab-content p-4">
+            <div class="mb-4">
+                <h2 class="text-lg font-semibold text-gray-800 mb-1">План на сегодня</h2>
+                <p class="text-xs text-gray-500" id="current-date"></p>
+            </div>
+            
+            <form id="daily-form" class="space-y-3">
+                <!-- Сиофор утром -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <input type="checkbox" value="breakfast" class="checkbox-custom daily-checkbox">
+                    <span class="flex-1"><strong>Завтрак</strong></span>
+                    <span class="text-xs text-gray-500">Сиофор 500 мг • 08:00</span>
+                </label>
+
+                <!-- Обед -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <input type="checkbox" value="lunch" class="checkbox-custom daily-checkbox">
+                    <span class="flex-1"><strong>Обед</strong></span>
+                    <span class="text-xs text-gray-500">14:00</span>
+                </label>
+
+                <!-- Сиофор вечером -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <input type="checkbox" value="dinner" class="checkbox-custom daily-checkbox">
+                    <span class="flex-1"><strong>Ужин</strong></span>
+                    <span class="text-xs text-gray-500">Сиофор 500 мг • 19:30</span>
+                </label>
+
+                <!-- Без жидкого сахара -->
+                <label class="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <input type="checkbox" value="no-sugar" class="checkbox-custom daily-checkbox">
+                    <span class="flex-1 text-yellow-800"><strong>🚫 Отказ от жидкого сахара</strong></span>
+                    <span class="text-xs text-yellow-700">Чай/кофе без сахара</span>
+                </label>
+
+                <!-- Прогулка -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <input type="checkbox" value="walk" class="checkbox-custom daily-checkbox">
+                    <span class="flex-1"><strong>🚶 Прогулка 5 км</strong></span>
+                </label>
+
+                <!-- Сон -->
+                <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <input type="checkbox" value="sleep" class="checkbox-custom daily-checkbox">
+                    <span class="flex-1"><strong>🌙 Сон</strong></span>
+                    <span class="text-xs text-gray-500">Лечь до 00:00</span>
+                </label>
+            </form>
+
+            <div class="mt-4 pt-4 border-t">
+                <p class="text-sm text-gray-600 flex items-center gap-2">
+                    <span>Прогресс:</span>
+                    <div class="flex-1 bg-gray-200 rounded-full h-3">
+                        <div id="progress-bar" class="bg-green-500 h-3 rounded-full transition-all" style="width: 0%"></div>
+                    </div>
+                    <span id="progress-text" class="text-xs text-gray-500">0/6</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- Вкладка 2: Календарь привычек -->
+        <section id="tab-calendar" class="tab-content hidden p-4">
+            <div class="mb-6 text-center">
+                <h2 class="text-lg font-semibold text-gray-800 mb-1">🔥 День без жидкого сахара</h2>
+                <div class="flex items-center justify-center gap-2 mt-3">
+                    <span class="bg-orange-100 text-orange-800 px-4 py-2 rounded-full font-semibold">
+                        🔥 <span id="streak-count">0</span> дней подряд
+                    </span>
+                </div>
+            </div>
+
+            <!-- Навигация месяца -->
+            <div class="flex items-center justify-between mb-4 px-1">
+                <button id="prev-month" class="text-gray-600 hover:text-green-600">←</button>
+                <h3 id="month-year" class="font-semibold text-gray-800"></h3>
+                <button id="next-month" class="text-gray-600 hover:text-green-600">→</button>
+            </div>
+
+            <!-- Сетка календаря -->
+            <div id="calendar-grid" class="grid grid-cols-7 gap-1">
+                <!-- Дни недели -->
+                <div class="text-xs text-gray-400 py-2 text-center">Пн</div>
+                <div class="text-xs text-gray-400 py-2 text-center">Вт</div>
+                <div class="text-xs text-gray-400 py-2 text-center">Ср</div>
+                <div class="text-xs text-gray-400 py-2 text-center">Чт</div>
+                <div class="text-xs text-gray-400 py-2 text-center">Пт</div>
+                <div class="text-xs text-gray-400 py-2 text-center">Сб</div>
+                <div class="text-xs text-gray-400 py-2 text-center">Вс</div>
+                <!-- Дни будут добавлены JS -->
+            </div>
+
+            <p class="text-xs text-center text-gray-400 mt-3">
+                Нажмите на день, чтобы отметить успех ✨
+            </p>
+        </section>
+
+        <!-- Вкладка 3: Мониторинг сахара -->
+        <section id="tab-monitoring" class="tab-content hidden p-4">
+            <h2 class="text-lg font-semibold text-gray-800 mb-4">Дневник сахара</h2>
+
+            <!-- Форма добавления -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Тип замера</label>
+                    <select id="sugar-type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="натощак">🌅 Натощак</option>
+                        <option value="после еды">🍽️ Через 2 часа после еды</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Значение (ммоль/л)</label>
+                    <input type="number" id="sugar-value" step="0.1" min="1" max="30" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                           placeholder="Например: 6.4">
+                </div>
+
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Заметка</label>
+                    <textarea id="sugar-note" rows="2" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="Самочувствие, что съел..."></textarea>
+                </div>
+
+                <button id="add-sugar-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2">
+                    <span>💾 Сохранить в дневник</span>
+                </button>
+            </div>
+
+            <!-- Лента истории -->
+            <div id="sugar-history" class="space-y-2">
+                <!-- Записи будут добавлены JS -->
+            </div>
+
+            <p id="empty-state" class="text-center py-8 text-gray-400 text-sm">
+                📝 Нет записей. Добавьте первый замер!
+            </p>
+        </section>
+
+    </div>
+
+    <script>
+    // ============================================
+    // HEALTH & HABIT TRACKER - MAIN JAVASCRIPT
+    // ============================================
+
+    (function() {
+        'use strict';
+
+        // ==================== КОНСТАНТЫ И СОСТОЯНИЕ ====================
+        
+        const STORAGE_KEYS = {
+            LOGS: 'health_tracker_logs',
+            HABIT_DAYS: 'habit_calendar_days'
+        };
+
+        let state = {
+            logs: [],
+            habitDays: {},
+            currentMonthOffset: 0, // Относительно текущего месяца
+            todayStr: ''
+        };
+
+        // ==================== УТИЛИТЫ ====================
+
+        function getTodayStr() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatDisplayDate(dateStr) {
+            const [year, month, day] = dateStr.split('-');
+            return `${day}.${month}.${year}`;
+        }
+
+        function formatTime(dateStr) {
+            // Извлекаем время из полного timestamp или используем дефолт
+            return dateStr.includes('T') ? 
+                dateStr.split('T')[1].slice(0, 5) : 
+                '—';
+        }
+
+        // ==================== ЦВЕТОВАЯ ЛОГИКА ДЛЯ САХАРА ====================
+
+        function getSugarColorClass(value, type) {
+            const numValue = parseFloat(value);
+            
+            if (type === 'натощак') {
+                // Натощак: ≤6.0 зеленый, 6.1-6.9 желтый, ≥7.0 красный
+                if (numValue <= 6.0) return 'green';
+                if (numValue <= 6.9) return 'yellow';
+                return 'red';
+            } else {
+                // После еды: ≤7.8 зеленый, 7.9-8.5 желтый, >8.5 красный
+                if (numValue <= 7.8) return 'green';
+                if (numValue <= 8.5) return 'yellow';
+                return 'red';
+            }
+        }
+
+        function getColorDescription(value, type) {
+            const numValue = parseFloat(value);
+            
+            if (type === 'натощак') {
+                if (numValue <= 6.0) return 'Норма ✅';
+                if (numValue <= 6.9) return 'Контроль ⚠️';
+                return 'Высокий ❌';
+            } else {
+                if (numValue <= 7.8) return 'Отлично ✅';
+                if (numValue <= 8.5) return 'Допустимо ⚠️';
+                return 'Высокий ❌';
+            }
+        }
+
+        // ==================== ЗАГРУЗКА ДАННЫХ ====================
+
+        function loadData() {
+            try {
+                state.logs = JSON.parse(localStorage.getItem(STORAGE_KEYS.LOGS)) || [];
+            } catch {
+                state.logs = [];
+            }
+
+            try {
+                state.habitDays = JSON.parse(localStorage.getItem(STORAGE_KEYS.HABIT_DAYS)) || {};
+            } catch {
+                state.habitDays = {};
+            }
+
+            state.todayStr = getTodayStr();
+        }
+
+        // ==================== ТАБЫ ====================
+
+        function initTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.dataset.tab;
+                    
+                    // Переключение кнопок
+                    tabBtns.forEach(b => {
+                        b.classList.remove('tab-active');
+                        if (b === btn) b.classList.add('tab-active');
+                    });
+
+                    // Переключение контента
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+                    // Если открыли календарь - перерисовать
+                    if (tabId === 'calendar') {
+                        renderCalendar();
+                    }
+                });
+            });
+
+            // По умолчанию вкладка plan активна
+            document.querySelector('[data-tab="plan"]').click();
+        }
+
+        // ==================== ВКЛАДКА: ПЛАН НА ДЕНЬ ====================
+
+        function initDailyPlan() {
+            // Устанавливаем текущую дату
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = 
+                new Date().toLocaleDateString('ru-RU', dateOptions);
+
+            // Восстанавливаем чекбоксы из LocalStorage
+            const savedChecks = state.todayStr in localStorage ? 
+                JSON.parse(localStorage.getItem(state.todayStr)) : {};
+            
+            document.querySelectorAll('.daily-checkbox').forEach(cb => {
+                cb.checked = !!savedChecks[cb.value];
+            });
+
+            // Эвент листенер для чекбоксов
+            document.querySelectorAll('.daily-checkbox').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const checks = JSON.parse(localStorage.getItem(state.todayStr) || '{}');
+                    if (cb.checked) {
+                        checks[cb.value] = true;
+                    } else {
+                        delete checks[cb.value];
+                    }
+                    localStorage.setItem(state.todayStr, JSON.stringify(checks));
+                    
+                    // Если отмечен "no-sugar" - также обновляем календарь
+                    if (cb.value === 'no-sugar') {
+                        state.habitDays[state.todayStr] = cb.checked;
+                        localStorage.setItem(STORAGE_KEYS.HABIT_DAYS, JSON.stringify(state.habitDays));
+                    }
+
+                    updateProgress();
+                });
+            });
+
+            updateProgress();
+
+            // Авто-сброс: если сегодня новый день - сбрасываем старые чекбоксы
+            // (упрощенно: просто не показываем их)
+        }
+
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.daily-checkbox');
+            const total = checkboxes.length;
+            let checked = 0;
+            
+            checkboxes.forEach(cb => {
+                if (cb.checked) checked++;
+            });
+
+            const percent = (checked / total) * 100;
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = `${checked}/${total}`;
+        }
+
+        // ==================== ВКЛАДКА: КАЛЕНДАРЬ====================
+
+        function initCalendar() {
+            document.getElementById('prev-month').addEventListener('click', () => {
+                state.currentMonthOffset--;
+                renderCalendar();
+            });
+
+            document.getElementById('next-month').addEventListener('click', () => {
+                state.currentMonthOffset++;
+                renderCalendar();
+            });
+        }
+
+        function renderCalendar() {
+            const date = new Date();
+            date.setMonth(date.getMonth() + state.currentMonthOffset);
+            
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            // Название месяца
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                               'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            document.getElementById('month-year').textContent = 
+                `${monthNames[month]} ${year}`;
+
+            // Очищаем сетку (оставляем заголовки)
+            const grid = document.getElementById('calendar-grid');
+            while (grid.children.length > 7) {
+                grid.removeChild(grid.lastChild);
+            }
+
+            // Первый день месяца и количество дней
+            const firstDay = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDayOfWeek = (firstDay.getDay() + 6) % 7; // ПН=0, ВС=6
+
+            // Добавляем пустые ячейки до первого дня
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const empty = document.createElement('div');
+                grid.appendChild(empty);
+            }
+
+            // Добавляем дни
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                
+                cell.className = 'calendar-day p-3 text-center rounded-lg bg-gray-100 text-sm';
+                cell.textContent = day;
+                
+                if (state.habitDays[dateStr]) {
+                    cell.classList.add('active');
+                }
+
+                // Подсветка сегодняшнего дня
+                if (dateStr === state.todayStr && !state.habitDays[dateStr]) {
+                    cell.classList.add('border-2', 'border-orange-300');
+                }
+
+                cell.addEventListener('click', () => {
+                    state.habitDays[dateStr] = !state.habitDays[dateStr];
+                    localStorage.setItem(STORAGE_KEYS.HABIT_DAYS, JSON.stringify(state.habitDays));
+                    renderCalendar(); // Перерисовать
+                    
+                    // Синхронизация с чекбоксом "no-sugar"
+                    if (dateStr === state.todayStr) {
+                        const noSugarCheckbox = document.querySelector('[value="no-sugar"]');
+                        if (noSugarCheckbox) {
+                            noSugarCheckbox.checked = state.habitDays[dateStr];
+                        }
+                    }
+                });
+
+                grid.appendChild(cell);
+            }
+
+            updateStreak();
+        }
+
+        function updateStreak() {
+            // Считаем текущую серию дней подряд (до сегодня)
+            let streak = 0;
+            
+            // Идем назад от сегодняшнего дня
+            for (let i = 0; i < 365; i++) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                
+                if (state.habitDays[dateStr]) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+
+            document.getElementById('streak-count').textContent = streak;
+        }
+
+        // ==================== ВКЛАДКА: МОНИТОРИнг САХАРА ====================
+
+        function initMonitoring() {
+            document.getElementById('add-sugar-btn').addEventListener('click', addSugarLog);
+            renderSugarHistory();
+        }
+
+        function addSugarLog() {
+            const type = document.getElementById('sugar-type').value;
+            const valueStr = document.getElementById('sugar-value').value;
+            const note = document.getElementById('sugar-note').value.trim();
+
+            if (!valueStr || parseFloat(valueStr) < 0.5) {
+                alert('Введите корректное значение сахара');
+                return;
+            }
+
+            const now = new Date();
+            const log = {
+                id: Date.now(),
+                date: getTodayStr(),
+                timestamp: now.toISOString(),
+                type: type,
+                value: parseFloat(valueStr),
+                note: note
+            };
+
+            state.logs.unshift(log); // Добавляем в начало
+            localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(state.logs));
+
+            // Очищаем форму
+            document.getElementById('sugar-value').value = '';
+            document.getElementById('sugar-note').value = '';
+
+            renderSugarHistory();
+        }
+
+        function deleteLog(id) {
+            state.logs = state.logs.filter(log => log.id !== id);
+            localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(state.logs));
+            renderSugarHistory();
+        }
+
+        function renderSugarHistory() {
+            const container = document.getElementById('sugar-history');
+            const emptyState = document.getElementById('empty-state');
+
+            if (state.logs.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            container.innerHTML = state.logs.map(log => {
+                const colorClass = getSugarColorClass(log.value, log.type);
+                const desc = getColorDescription(log.value, log.type);
+                
+                return `
+                    <div class="p-3 rounded-lg bg-${colorClass}-100 border-l-4 border-${colorClass}-500">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-xs text-gray-600">${formatDisplayDate(log.date)}</span>
+                                <span class="text-xs text-gray-500 ml-2">${formatTime(log.timestamp)}</span>
+                            </div>
+                            <button onclick="window.deleteSugarLog(${log.id})" 
+                                    class="text-gray-400 hover:text-red-500 text-xs px-2">
+                                ✕
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="${colorClass}-800 font-medium text-sm capitalize">${log.type === 'натощак' ? 'Натощак 🌅' : 'После еды 🍽️'}</span>
+                            <div class="flex items-center gap-2">
+                                <span class="${colorClass}-700 font-bold text-lg">${log.value.toFixed(1)}</span>
+                                <span class="text-xs ${colorClass}-700">ммоль/л</span>
+                            </div>
+                        </div>
+                        ${log.note ? `<p class="text-xs text-gray-600 mt-2 italic">💬 ${log.note}</p>` : ''}
+                        <div class="text-xs ${colorClass}-700 mt-1">📊 ${desc}</div>
+                    </div>
+                `;
+            }).join('');
+
+            // Добавляем обработчики удаления (глобальная функция)
+        }
+
+        // Глобальная функция для удаления (доступна из HTML onclick)
+        window.deleteSugarLog = function(id) {
+            deleteLog(id);
+        };
+
+        // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+
+        function init() {
+            loadData();
+            
+            // Проверка на новый день - сброс чеклиста если нужно
+            const lastDate = localStorage.getItem('last_check_date');
+            if (lastDate !== state.todayStr) {
+                // Новый день - сбрасываем чекбоксы (но сохраняем календарь)
+                localStorage.removeItem(state.todayStr);
+                localStorage.setItem('last_check_date', state.todayStr);
+            }
+
+            initTabs();
+            initDailyPlan();
+            initCalendar();
+            initMonitoring();
+
+            // Авто-обновление streak при загрузке
+            updateStreak();
+        }
+
+        // Запуск после загрузки DOM
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+    })();
+    </script>
+</body>
+</html>
